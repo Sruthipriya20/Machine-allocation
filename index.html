@@ -5,152 +5,208 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mauyran Machine Bookings</title>
 
-<!-- ══════════════════════════════════════════════════════════════
-  ONLY CHANGE THIS ONE LINE — paste your Firebase database URL below
-  Get it from: console.firebase.google.com → your project → Realtime Database
-══════════════════════════════════════════════════════════════ -->
+<!-- ══════════════════════════════════════════════════════
+  CHANGE THIS ONE LINE — paste your Firebase database URL
+  Get it from: console.firebase.google.com → Realtime Database
+══════════════════════════════════════════════════════ -->
 <script>
-  const FIREBASE_URL = "https://mauyran-booking-default-rtdb.asia-southeast1.firebasedatabase.app";
-  // Example: "https://mauyran-booking-abc12-default-rtdb.asia-southeast1.firebasedatabase.app"
+  const FIREBASE_URL = "PASTE_YOUR_FIREBASE_URL_HERE";
 </script>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f4f4f6;color:#1a1a1a;min-height:100vh}
-.app{max-width:800px;margin:0 auto;padding:24px 16px 60px}
-.setup-banner{background:#fff3cd;border:1px solid #ffc107;border-radius:12px;padding:16px 20px;margin-bottom:20px;font-size:13px;color:#664d03}
-.setup-banner strong{display:block;font-size:14px;margin-bottom:4px;color:#a0522d}
-.setup-banner code{background:#ffe;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:12px}
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:100}
-.modal{background:white;border-radius:16px;padding:32px;width:90%;max-width:380px;text-align:center}
-.modal h2{font-size:20px;font-weight:700;margin-bottom:8px}
-.modal p{color:#666;font-size:14px;margin-bottom:20px}
-.modal input{width:100%;padding:12px;border:1.5px solid #ddd;border-radius:10px;font-size:15px;margin-bottom:6px;font-family:inherit}
-.modal input:focus{outline:none;border-color:#6b3fa0}
-.modal .hint{font-size:12px;color:#aaa;margin-bottom:18px}
-.modal button{width:100%;background:#6b3fa0;color:white;border:none;padding:13px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer}
-.modal button:hover{background:#5a3088}
-.header{text-align:center;margin-bottom:24px}
-.logo{width:78px;height:78px;border-radius:18px;background:#6b3fa0;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:28px;color:white;font-weight:700}
-h1{font-size:24px;font-weight:700}
-.subtitle{color:#777;font-size:14px;margin-top:4px}
-.date-pill{display:inline-block;background:#f0eaff;color:#6b3fa0;font-size:13px;font-weight:600;padding:6px 18px;border-radius:20px;margin-top:10px}
-.user-bar{display:flex;align-items:center;justify-content:space-between;background:white;border-radius:10px;padding:10px 16px;margin-bottom:18px;border:1px solid #e8e8e8}
-.u-info{display:flex;align-items:center;gap:10px}
-.avatar{width:34px;height:34px;border-radius:50%;background:#6b3fa0;color:white;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
-.u-name{font-size:14px;font-weight:600}
-.u-sub{font-size:12px;color:#aaa}
-.live-dot{display:inline-block;width:7px;height:7px;background:#22c55e;border-radius:50%;margin-right:4px;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-.change-btn{font-size:12px;color:#888;border:1px solid #ddd;background:none;padding:5px 12px;border-radius:6px;cursor:pointer}
-.change-btn:hover{border-color:#6b3fa0;color:#6b3fa0}
-.tabs{display:flex;background:#f0eaff;border-radius:10px;padding:4px;margin-bottom:18px}
-.tab{flex:1;text-align:center;padding:10px 4px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;color:#6b3fa0}
-.tab.active{background:white;box-shadow:0 1px 4px rgba(0,0,0,0.08)}
-.section{background:white;border-radius:14px;padding:22px;margin-bottom:16px;border:1px solid #e8e8e8}
-.sec-title{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#6b3fa0;margin-bottom:16px}
-.cal-grid-wrap{display:grid;grid-template-columns:1fr 1fr;gap:24px}
-@media(max-width:560px){.cal-grid-wrap{grid-template-columns:1fr}}
-.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.cal-nav button{background:none;border:1px solid #ddd;border-radius:7px;width:28px;height:28px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;color:#555}
-.cal-nav button:hover{background:#f0eaff;border-color:#6b3fa0;color:#6b3fa0}
-.cal-month{font-weight:600;font-size:14px}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
-.cal-hdr{text-align:center;font-size:10px;font-weight:700;color:#bbb;padding:3px 0}
-.cal-day{text-align:center;padding:6px 2px;border-radius:7px;font-size:13px;color:#333;cursor:pointer}
-.cal-day:hover:not(.empty):not(.past){background:#f0eaff;color:#6b3fa0}
-.cal-day.today{font-weight:700;color:#6b3fa0}
-.cal-day.selected{background:#6b3fa0;color:white !important;font-weight:700;border-radius:50%}
-.cal-day.empty,.cal-day.past{color:#ddd;cursor:not-allowed;pointer-events:none}
-.slots-label{font-size:11px;font-weight:700;color:#bbb;margin-bottom:8px;letter-spacing:.05em}
-.slots-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;max-height:260px;overflow-y:auto}
-.slot{padding:8px 2px;text-align:center;border:1px solid #e8e8e8;border-radius:8px;cursor:pointer;font-size:12px;color:#444;line-height:1.3}
-.slot:hover:not(.booked):not(.mine-booked){border-color:#6b3fa0;color:#6b3fa0;background:#f7f3ff}
-.slot.selected{background:#6b3fa0;color:white;border-color:#6b3fa0;font-weight:600}
-.slot.booked{background:#fafafa;color:#ccc;cursor:not-allowed;font-size:11px}
-.slot.mine-booked{background:#f0eaff;color:#9b72d0;cursor:not-allowed;font-size:11px}
-.slot .who{display:block;font-size:9px;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.fg{margin-bottom:13px}
-label{display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:5px}
-.req{color:#d32f2f}
-input[type=text],select,textarea{width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:8px;font-size:13px;font-family:inherit;color:#1a1a1a;background:#fafafa}
-input:focus,select:focus,textarea:focus{outline:none;border-color:#6b3fa0;background:white}
-textarea{resize:vertical;min-height:70px}
-input[readonly]{background:#f5f5f5;color:#888;cursor:default}
-.btn-row{display:flex;gap:10px;margin-top:14px}
-.btn-p{flex:1;background:#6b3fa0;color:white;border:none;padding:12px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer}
-.btn-p:hover{background:#5a3088}
-.btn-p:disabled{background:#ccc;cursor:not-allowed}
-.btn-s{flex:1;background:white;color:#666;border:1px solid #ddd;padding:12px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer}
-.btn-s:hover{border-color:#6b3fa0;color:#6b3fa0}
-.alert{padding:10px 14px;border-radius:8px;font-size:13px;margin-top:10px;display:none}
-.err{background:#fff0f0;color:#c62828;border:1px solid #ffcdd2}
-.bk-card{border:1px solid #eee;border-radius:10px;padding:14px 16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
-.bk-card h4{font-size:14px;font-weight:600}
-.bk-card p{font-size:12px;color:#888;margin-top:3px}
-.bk-card .desc{font-size:11px;color:#bbb;font-style:italic;margin-top:4px}
-.badge{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;white-space:nowrap}
-.b-up{background:#f0eaff;color:#6b3fa0}
-.b-mine{background:#e8f5e9;color:#2e7d32}
-.del-btn{background:none;border:none;color:#ddd;cursor:pointer;font-size:16px;padding:2px 6px;border-radius:5px}
-.del-btn:hover{color:#d32f2f;background:#fff0f0}
-.succ-wrap{text-align:center;padding:32px 16px}
-.succ-icon{font-size:52px;margin-bottom:14px}
-.succ-wrap h2{font-size:22px;font-weight:700;color:#2e7d32}
-.succ-wrap p{color:#666;font-size:14px;margin-top:6px}
-.succ-table{background:#f9f9f9;border-radius:10px;padding:14px;margin:18px 0;text-align:left}
-.sr{display:flex;justify-content:space-between;padding:5px 0;font-size:13px;border-bottom:1px solid #f0f0f0}
-.sr:last-child{border-bottom:none}
-.sr span:first-child{color:#999}
-.sr span:last-child{font-weight:600;text-align:right;max-width:65%}
-.loader{text-align:center;padding:28px;color:#aaa;font-size:14px}
-.spin{display:inline-block;width:22px;height:22px;border:3px solid #eee;border-top-color:#6b3fa0;border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle;margin-right:8px}
-@keyframes spin{to{transform:rotate(360deg)}}
-.tz-note{font-size:11px;color:#aaa;text-align:center;margin-top:10px}
-.empty{text-align:center;padding:36px;color:#ccc}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f0f3; color: #1a1a1a; min-height: 100vh; }
+.app { max-width: 780px; margin: 0 auto; padding: 28px 16px 60px; }
+
+/* ── Setup banner ── */
+.setup-banner { background: #fff8e1; border: 1px solid #ffcc02; border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; font-size: 13px; color: #6d4c00; }
+.setup-banner strong { display: block; font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+.setup-banner a { color: #6b3fa0; }
+
+/* ── Name modal ── */
+.modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: flex; align-items: center; justify-content: center; z-index: 200; }
+.modal { background: #fff; border-radius: 18px; padding: 36px 28px; width: 92%; max-width: 360px; text-align: center; box-shadow: 0 8px 40px rgba(0,0,0,0.18); }
+.modal .icon { font-size: 44px; margin-bottom: 14px; }
+.modal h2 { font-size: 19px; font-weight: 700; margin-bottom: 6px; }
+.modal p { color: #777; font-size: 13px; margin-bottom: 20px; }
+.modal input { width: 100%; padding: 11px 14px; border: 1.5px solid #ddd; border-radius: 10px; font-size: 15px; font-family: inherit; margin-bottom: 6px; }
+.modal input:focus { outline: none; border-color: #6b3fa0; }
+.modal .hint { font-size: 12px; color: #bbb; margin-bottom: 18px; }
+.modal .mbtn { width: 100%; background: #6b3fa0; color: #fff; border: none; padding: 13px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; }
+.modal .mbtn:hover { background: #5a3088; }
+
+/* ── Header ── */
+.header { text-align: center; margin-bottom: 22px; }
+.logo { width: 76px; height: 76px; border-radius: 18px; background: #6b3fa0; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; font-size: 28px; font-weight: 700; color: #fff; }
+.header h1 { font-size: 23px; font-weight: 700; }
+.header p { color: #888; font-size: 13px; margin-top: 3px; }
+.date-pill { display: inline-block; margin-top: 10px; background: #ede9ff; color: #6b3fa0; font-size: 13px; font-weight: 600; padding: 6px 18px; border-radius: 20px; }
+
+/* ── User bar ── */
+.user-bar { display: flex; align-items: center; justify-content: space-between; background: #fff; border-radius: 12px; padding: 11px 16px; margin-bottom: 16px; border: 1px solid #e4e4e8; }
+.u-left { display: flex; align-items: center; gap: 11px; }
+.avatar { width: 36px; height: 36px; border-radius: 50%; background: #6b3fa0; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+.u-name { font-size: 14px; font-weight: 600; }
+.u-sub { font-size: 11px; color: #aaa; display: flex; align-items: center; gap: 4px; margin-top: 1px; }
+.live-dot { width: 7px; height: 7px; background: #22c55e; border-radius: 50%; display: inline-block; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+.chg-btn { font-size: 12px; color: #888; border: 1px solid #e0e0e0; background: none; padding: 6px 13px; border-radius: 8px; cursor: pointer; }
+.chg-btn:hover { border-color: #6b3fa0; color: #6b3fa0; }
+
+/* ── Tabs ── */
+.tabs { display: flex; background: #ede9ff; border-radius: 12px; padding: 4px; margin-bottom: 16px; gap: 4px; }
+.tab { flex: 1; text-align: center; padding: 10px 6px; border-radius: 9px; font-size: 13px; font-weight: 600; cursor: pointer; color: #7c5cbf; white-space: nowrap; }
+.tab.active { background: #fff; box-shadow: 0 1px 6px rgba(0,0,0,0.09); color: #6b3fa0; }
+
+/* ── Section card ── */
+.card { background: #fff; border-radius: 16px; padding: 22px; margin-bottom: 16px; border: 1px solid #e4e4e8; }
+.card-title { font-size: 11px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: #6b3fa0; margin-bottom: 18px; }
+
+/* ── Calendar + Slots grid ── */
+.cal-slots { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+@media (max-width: 540px) { .cal-slots { grid-template-columns: 1fr; } }
+
+/* ── Calendar ── */
+.cal-wrap { min-width: 0; }
+.cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.cal-nav-btn { width: 30px; height: 30px; border: 1px solid #e0e0e0; border-radius: 8px; background: none; cursor: pointer; font-size: 16px; color: #666; display: flex; align-items: center; justify-content: center; flex-shrink: 0; line-height: 1; }
+.cal-nav-btn:hover { background: #f0eaff; border-color: #6b3fa0; color: #6b3fa0; }
+.cal-month-label { font-weight: 600; font-size: 14px; flex: 1; text-align: center; }
+.cal-days { display: grid; grid-template-columns: repeat(7, 1fr); row-gap: 2px; }
+.cal-hdr { text-align: center; font-size: 10px; font-weight: 700; color: #c0c0c0; padding-bottom: 4px; }
+.cal-day { text-align: center; padding: 6px 0; border-radius: 8px; font-size: 13px; color: #333; cursor: pointer; user-select: none; }
+.cal-day:hover:not(.empty):not(.past) { background: #f0eaff; color: #6b3fa0; }
+.cal-day.today { font-weight: 700; color: #6b3fa0; }
+.cal-day.selected { background: #6b3fa0 !important; color: #fff !important; font-weight: 700; border-radius: 50%; }
+.cal-day.empty, .cal-day.past { color: #ddd; cursor: not-allowed; pointer-events: none; }
+
+/* ── Time slots ── */
+.slots-wrap { min-width: 0; }
+.slots-label { font-size: 11px; font-weight: 700; letter-spacing: .06em; color: #c0c0c0; margin-bottom: 8px; }
+.slots-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; max-height: 268px; overflow-y: auto; padding-right: 2px; }
+.slots-grid::-webkit-scrollbar { width: 4px; }
+.slots-grid::-webkit-scrollbar-thumb { background: #ddd; border-radius: 4px; }
+.slot { padding: 9px 4px; text-align: center; border: 1px solid #e8e8e8; border-radius: 9px; cursor: pointer; font-size: 12px; color: #444; line-height: 1.35; transition: border-color .15s, background .15s; }
+.slot:hover:not(.booked):not(.mine-booked) { border-color: #6b3fa0; color: #6b3fa0; background: #f7f3ff; }
+.slot.selected { background: #6b3fa0; color: #fff; border-color: #6b3fa0; font-weight: 600; }
+/* Someone else booked */
+.slot.booked { background: #fafafa; color: #ccc; cursor: not-allowed; border-color: #f0f0f0; }
+.slot.booked .who { display: block; font-size: 9px; color: #d0d0d0; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Part of a multi-slot duration block by someone else */
+.slot.blocked { background: #fff4f4; color: #e0a0a0; cursor: not-allowed; border-color: #ffd6d6; }
+.slot.blocked .who { display: block; font-size: 9px; color: #e0a0a0; margin-top: 2px; }
+/* Your own booking */
+.slot.mine-start { background: #ede9ff; color: #6b3fa0; cursor: not-allowed; border-color: #c8b8f0; font-weight: 600; }
+.slot.mine-start .who { display: block; font-size: 9px; color: #9b78d8; margin-top: 2px; }
+/* Your own duration block */
+.slot.mine-block { background: #f3f0ff; color: #9b78d8; cursor: not-allowed; border-color: #ddd6f8; }
+.slot.mine-block .who { display: block; font-size: 9px; color: #b8a0e0; margin-top: 2px; }
+
+/* ── Form ── */
+.fg { margin-bottom: 14px; }
+.fg label { display: block; font-size: 12px; font-weight: 600; color: #555; margin-bottom: 5px; }
+.req { color: #d32f2f; }
+input[type=text], select, textarea {
+  width: 100%; padding: 10px 13px; border: 1px solid #e0e0e0;
+  border-radius: 9px; font-size: 13px; font-family: inherit;
+  color: #1a1a1a; background: #fafafa; transition: border-color .15s;
+}
+input:focus, select:focus, textarea:focus { outline: none; border-color: #6b3fa0; background: #fff; }
+textarea { resize: vertical; min-height: 72px; }
+input[readonly] { background: #f5f5f5; color: #999; cursor: default; }
+
+/* ── Duration info strip ── */
+.dur-info { background: #f0eaff; border-radius: 8px; padding: 9px 14px; font-size: 12px; color: #6b3fa0; margin-top: -6px; margin-bottom: 14px; display: none; }
+.dur-info.show { display: block; }
+
+/* ── Buttons ── */
+.btn-row { display: flex; gap: 10px; margin-top: 16px; }
+.btn-p { flex: 1; background: #6b3fa0; color: #fff; border: none; padding: 13px; border-radius: 11px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background .15s; }
+.btn-p:hover { background: #5a3088; }
+.btn-p:disabled { background: #c8b8e8; cursor: not-allowed; }
+.btn-s { flex: 1; background: #fff; color: #666; border: 1px solid #e0e0e0; padding: 13px; border-radius: 11px; font-size: 14px; font-weight: 600; cursor: pointer; }
+.btn-s:hover { border-color: #6b3fa0; color: #6b3fa0; }
+
+/* ── Alert ── */
+.alert { padding: 10px 14px; border-radius: 9px; font-size: 13px; margin-top: 12px; display: none; }
+.err { background: #fff0f0; color: #c62828; border: 1px solid #ffcdd2; }
+
+/* ── Booking cards ── */
+.bk-card { border: 1px solid #eeeeee; border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.bk-info h4 { font-size: 14px; font-weight: 600; }
+.bk-info p { font-size: 12px; color: #888; margin-top: 3px; line-height: 1.5; }
+.bk-info .desc { font-size: 11px; color: #bbb; font-style: italic; margin-top: 5px; }
+.bk-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0; }
+.badge { font-size: 11px; padding: 4px 11px; border-radius: 20px; font-weight: 600; }
+.b-mine { background: #e8f5e9; color: #2e7d32; }
+.b-up { background: #ede9ff; color: #6b3fa0; }
+.del-btn { background: none; border: none; color: #ddd; cursor: pointer; font-size: 16px; padding: 2px 6px; border-radius: 6px; }
+.del-btn:hover { color: #d32f2f; background: #fff0f0; }
+
+/* ── Success ── */
+.succ-wrap { text-align: center; padding: 36px 16px; }
+.succ-icon { font-size: 56px; margin-bottom: 14px; }
+.succ-wrap h2 { font-size: 22px; font-weight: 700; color: #2e7d32; }
+.succ-wrap > p { color: #777; font-size: 14px; margin-top: 6px; }
+.succ-table { background: #f9f9f9; border-radius: 12px; padding: 14px; margin: 20px 0; text-align: left; }
+.sr { display: flex; justify-content: space-between; align-items: flex-start; padding: 6px 0; font-size: 13px; border-bottom: 1px solid #f0f0f0; gap: 8px; }
+.sr:last-child { border-bottom: none; }
+.sr span:first-child { color: #aaa; flex-shrink: 0; }
+.sr span:last-child { font-weight: 600; text-align: right; }
+
+/* ── Legend ── */
+.legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+.leg-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #888; }
+.leg-dot { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+
+/* ── Loader ── */
+.loader { text-align: center; padding: 32px; color: #aaa; font-size: 14px; }
+.spin { display: inline-block; width: 22px; height: 22px; border: 3px solid #eee; border-top-color: #6b3fa0; border-radius: 50%; animation: spin .8s linear infinite; vertical-align: middle; margin-right: 8px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.tz-note { font-size: 11px; color: #bbb; text-align: center; margin-top: 12px; }
+.empty-state { text-align: center; padding: 36px; color: #ccc; font-size: 14px; }
 </style>
 </head>
 <body>
 
-<!-- Name modal -->
+<!-- ── Name modal ── -->
 <div class="modal-bg" id="name-modal">
   <div class="modal">
-    <div style="font-size:40px;margin-bottom:12px">🔧</div>
+    <div class="icon">🔧</div>
     <h2>Mauyran Machine Booking</h2>
-    <p>Enter your name to identify your bookings to the team.</p>
-    <input type="text" id="modal-name" placeholder="Your full name (e.g. Sruthi K)" maxlength="40"/>
-    <div class="hint">Shown to your team when you reserve a slot</div>
-    <button onclick="setUserName()">Continue →</button>
+    <p>Enter your name so your team knows who has each slot.</p>
+    <input type="text" id="modal-name" placeholder="Your full name (e.g. Sruthi K)" maxlength="40" />
+    <div class="hint">Displayed on booked time slots for your team</div>
+    <button class="mbtn" onclick="setUserName()">Continue →</button>
   </div>
 </div>
 
-<!-- Main app -->
+<!-- ── Main app ── -->
 <div class="app" id="main-app" style="display:none">
 
   <div class="header">
     <div class="logo">M</div>
     <h1>Mauyran Machine Bookings</h1>
-    <div class="subtitle">Automation Machine —Booking System</div>
+    <p>Automation Machine — HIL Booking System</p>
     <div class="date-pill" id="sel-label">Select a date and time</div>
   </div>
 
   <div class="setup-banner" id="setup-warn" style="display:none">
-    <strong>⚙️ Setup needed — bookings are local only right now</strong>
-    Open <code>index.html</code>, find <code>PASTE_YOUR_FIREBASE_URL_HERE</code>
-    and replace it with your Firebase URL from
-    <a href="https://console.firebase.google.com" target="_blank" style="color:#6b3fa0">console.firebase.google.com</a>.
-    After that, all team members share bookings in real time.
+    <strong>⚙️ Firebase not connected — bookings are local only</strong>
+    Open <code>index.html</code>, replace <code>PASTE_YOUR_FIREBASE_URL_HERE</code>
+    with your URL from <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a>.
+    After that, all team members share bookings live.
   </div>
 
   <div class="user-bar">
-    <div class="u-info">
+    <div class="u-left">
       <div class="avatar" id="av">SK</div>
       <div>
-        <div class="u-name" id="uname">Loading...</div>
+        <div class="u-name" id="uname">—</div>
         <div class="u-sub"><span class="live-dot"></span>Live — shared with team</div>
       </div>
     </div>
-    <button class="change-btn" onclick="changeName()">Change name</button>
+    <button class="chg-btn" onclick="changeName()">Change name</button>
   </div>
 
   <div class="tabs">
@@ -159,30 +215,44 @@ input[readonly]{background:#f5f5f5;color:#888;cursor:default}
     <div class="tab" onclick="showTab('all')">👥 All Bookings</div>
   </div>
 
-  <!-- BOOK TAB -->
+  <!-- ══ BOOK TAB ══ -->
   <div id="tab-book">
-    <div class="section">
-      <div class="sec-title">📅 Pick Date &amp; Time</div>
-      <div class="cal-grid-wrap">
-        <div>
+    <div class="card">
+      <div class="card-title">📅 Pick Date &amp; Time</div>
+      <div class="cal-slots">
+
+        <!-- Calendar -->
+        <div class="cal-wrap">
           <div class="cal-nav">
-            <button onclick="chMonth(-1)">&#8249;</button>
-            <span class="cal-month" id="cal-lbl"></span>
-            <button onclick="chMonth(1)">&#8250;</button>
+            <button class="cal-nav-btn" onclick="chMonth(-1)">&#8249;</button>
+            <span class="cal-month-label" id="cal-lbl"></span>
+            <button class="cal-nav-btn" onclick="chMonth(1)">&#8250;</button>
           </div>
-          <div class="cal-grid" id="cal"></div>
+          <div class="cal-days" id="cal"></div>
         </div>
-        <div>
+
+        <!-- Time slots -->
+        <div class="slots-wrap">
           <div class="slots-label">AVAILABLE TIMES (IST)</div>
           <div class="slots-grid" id="slots"></div>
+          <!-- Legend -->
+          <div class="legend">
+            <div class="leg-item"><div class="leg-dot" style="background:#6b3fa0"></div>Selected</div>
+            <div class="leg-item"><div class="leg-dot" style="background:#ede9ff;border:1px solid #c8b8f0"></div>Your booking</div>
+            <div class="leg-item"><div class="leg-dot" style="background:#fafafa;border:1px solid #f0f0f0"></div>Booked</div>
+          </div>
         </div>
+
       </div>
       <div class="tz-note">🌐 UTC+05:30 — Chennai, Kolkata, Mumbai, New Delhi</div>
     </div>
 
-    <div class="section">
-      <div class="sec-title">📋 Booking Details</div>
-      <div class="fg"><label>Your name</label><input type="text" id="f-name" readonly/></div>
+    <div class="card">
+      <div class="card-title">📋 Booking Details</div>
+      <div class="fg">
+        <label>Your name</label>
+        <input type="text" id="f-name" readonly />
+      </div>
       <div class="fg">
         <label>SW Team</label>
         <select id="f-team">
@@ -211,14 +281,18 @@ input[readonly]{background:#f5f5f5;color:#888;cursor:default}
       </div>
       <div class="fg">
         <label>Duration</label>
-        <select id="f-dur">
-          <option value="30">30 minutes</option>
-          <option value="60" selected>1 hour</option>
-          <option value="90">1.5 hours</option>
-          <option value="120">2 hours</option>
-          <option value="180">3 hours</option>
-          <option value="240">4 hours</option>
+        <select id="f-dur" onchange="onDurChange()">
+          <option value="30">30 minutes (1 slot)</option>
+          <option value="60" selected>1 hour (2 slots)</option>
+          <option value="90">1.5 hours (3 slots)</option>
+          <option value="120">2 hours (4 slots)</option>
+          <option value="180">3 hours (6 slots)</option>
+          <option value="240">4 hours (8 slots)</option>
         </select>
+      </div>
+      <!-- Duration preview info -->
+      <div class="dur-info" id="dur-info">
+        ⏱ Booking selected — will block <strong id="dur-info-slots"></strong> from <strong id="dur-info-start"></strong> to <strong id="dur-info-end"></strong>
       </div>
       <div class="fg">
         <label>Description of work <span class="req">*</span></label>
@@ -232,9 +306,9 @@ input[readonly]{background:#f5f5f5;color:#888;cursor:default}
     </div>
   </div>
 
-  <!-- SUCCESS -->
+  <!-- ══ SUCCESS ══ -->
   <div id="tab-success" style="display:none">
-    <div class="section">
+    <div class="card">
       <div class="succ-wrap">
         <div class="succ-icon">✅</div>
         <h2>Booking Confirmed!</h2>
@@ -248,229 +322,351 @@ input[readonly]{background:#f5f5f5;color:#888;cursor:default}
     </div>
   </div>
 
-  <!-- MY BOOKINGS -->
+  <!-- ══ MY BOOKINGS ══ -->
   <div id="tab-my" style="display:none">
-    <div class="section">
-      <div class="sec-title">📋 My Bookings</div>
+    <div class="card">
+      <div class="card-title">📋 My Bookings</div>
       <div id="my-list"><div class="loader"><span class="spin"></span>Loading...</div></div>
     </div>
   </div>
 
-  <!-- ALL BOOKINGS -->
+  <!-- ══ ALL BOOKINGS ══ -->
   <div id="tab-all" style="display:none">
-    <div class="section">
-      <div class="sec-title">👥 All Upcoming Bookings — Mauyran Machine</div>
+    <div class="card">
+      <div class="card-title">👥 All Upcoming Bookings — Mauyran Machine</div>
       <div id="all-list"><div class="loader"><span class="spin"></span>Loading...</div></div>
     </div>
   </div>
 
-</div>
+</div><!-- /app -->
 
 <script>
-const USE_FIREBASE = FIREBASE_URL !== 'PASTE_YOUR_FIREBASE_URL_HERE' && FIREBASE_URL.startsWith('https://');
-const DB = USE_FIREBASE ? FIREBASE_URL.replace(/\/$/, '') : null;
-const SLOTS=['07:00','07:30','08:00','08:30','09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00','20:30','21:00'];
-const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
-const WD=['M','T','W','T','F','S','S'];
-const LSKEY='mauyran_bk_v3';
-const UKEY='mauyran_user';
+// ── Firebase setup ────────────────────────────────────────────────────────────
+const USE_FB = FIREBASE_URL !== 'PASTE_YOUR_FIREBASE_URL_HERE' && FIREBASE_URL.startsWith('https://');
+const DB = USE_FB ? FIREBASE_URL.replace(/\/$/, '') : null;
 
-let calY=new Date().getFullYear(),calM=new Date().getMonth();
-let selDate=null,selTime=null,userName='',allBk={};
+async function fbGet(p) {
+  if (!DB) return null;
+  try { const r = await fetch(`${DB}/${p}.json`); return r.ok ? r.json() : null; } catch { return null; }
+}
+async function fbSet(p, d) {
+  if (!DB) return false;
+  try { const r = await fetch(`${DB}/${p}.json`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(d) }); return r.ok; } catch { return false; }
+}
+async function fbDel(p) {
+  if (!DB) return;
+  try { await fetch(`${DB}/${p}.json`, { method: 'DELETE' }); } catch {}
+}
+function lsGet() { try { return JSON.parse(localStorage.getItem('mauyran_bk_v4') || '{}'); } catch { return {}; } }
+function lsSave() { try { localStorage.setItem('mauyran_bk_v4', JSON.stringify(allBk)); } catch {} }
 
-async function fbGet(p){if(!DB)return null;try{const r=await fetch(`${DB}/${p}.json`);return r.ok?r.json():null;}catch{return null;}}
-async function fbSet(p,d){if(!DB)return false;try{const r=await fetch(`${DB}/${p}.json`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});return r.ok;}catch{return false;}}
-async function fbDel(p){if(!DB)return;try{await fetch(`${DB}/${p}.json`,{method:'DELETE'});}catch{}}
-function lsGet(){try{return JSON.parse(localStorage.getItem(LSKEY)||'{}');}catch{return {};}}
-function lsSave(){try{localStorage.setItem(LSKEY,JSON.stringify(allBk));}catch{}}
+// ── State ─────────────────────────────────────────────────────────────────────
+const SLOTS = ['07:00','07:30','08:00','08:30','09:00','09:30','10:00','10:30',
+               '11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30',
+               '15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30',
+               '19:00','19:30','20:00','20:30','21:00'];
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const WD = ['M','T','W','T','F','S','S'];
 
-async function loadBk(){
-  if(USE_FIREBASE){const d=await fbGet('bookings');allBk=d||{};}
-  else{allBk=lsGet();}
+let calY = new Date().getFullYear(), calM = new Date().getMonth();
+let selDate = null, selTime = null, userName = '', allBk = {};
+
+// ── Duration helpers ──────────────────────────────────────────────────────────
+function toMins(timeStr) {
+  const [h, m] = timeStr.split(':').map(Number);
+  return h * 60 + m;
+}
+function addMins(timeStr, mins) {
+  const total = toMins(timeStr) + mins;
+  return String(Math.floor(total / 60)).padStart(2, '0') + ':' + String(total % 60).padStart(2, '0');
 }
 
-setInterval(async()=>{await loadBk();renderSlots();},30000);
+// Returns the booking that blocks a given time slot, or null if free
+// A slot at time T is blocked by booking B if: B.startMins <= T.mins < B.startMins + B.dur
+function getBlockingBooking(slotTime, dayBk) {
+  const slotMins = toMins(slotTime);
+  for (const bk of Object.values(dayBk)) {
+    const start = toMins(bk.time);
+    const end   = start + (bk.dur || 60);
+    if (slotMins >= start && slotMins < end) return bk;
+  }
+  return null;
+}
 
-function initUser(){
-  userName=localStorage.getItem(UKEY)||'';
-  if(!userName){document.getElementById('name-modal').style.display='flex';}
+// Check if a new booking [newTime, newTime+newDur) overlaps any existing booking
+function getOverlappingBooking(newTime, newDur, dayBk) {
+  const newStart = toMins(newTime);
+  const newEnd   = newStart + newDur;
+  for (const bk of Object.values(dayBk)) {
+    const bkStart = toMins(bk.time);
+    const bkEnd   = bkStart + (bk.dur || 60);
+    // Overlap if newStart < bkEnd AND newEnd > bkStart
+    if (newStart < bkEnd && newEnd > bkStart) return bk;
+  }
+  return null;
+}
+
+// ── Load bookings ─────────────────────────────────────────────────────────────
+async function loadBk() {
+  if (USE_FB) { const d = await fbGet('bookings'); allBk = d || {}; }
+  else { allBk = lsGet(); }
+}
+
+// Auto-refresh every 30s
+setInterval(async () => {
+  await loadBk();
+  renderSlots();
+  updateDurInfo();
+  if (document.getElementById('tab-all').style.display !== 'none') renderAll();
+  if (document.getElementById('tab-my').style.display !== 'none') renderMy();
+}, 30000);
+
+// ── User ──────────────────────────────────────────────────────────────────────
+function initUser() {
+  userName = localStorage.getItem('mauyran_user') || '';
+  if (!userName) document.getElementById('name-modal').style.display = 'flex';
   else showApp();
 }
-function setUserName(){
-  const v=document.getElementById('modal-name').value.trim();
-  if(!v){document.getElementById('modal-name').style.borderColor='#d32f2f';return;}
-  userName=v;localStorage.setItem(UKEY,userName);
-  document.getElementById('name-modal').style.display='none';showApp();
+function setUserName() {
+  const v = document.getElementById('modal-name').value.trim();
+  if (!v) { document.getElementById('modal-name').style.borderColor = '#d32f2f'; return; }
+  userName = v;
+  localStorage.setItem('mauyran_user', userName);
+  document.getElementById('name-modal').style.display = 'none';
+  showApp();
 }
-document.getElementById('modal-name').addEventListener('keydown',e=>{if(e.key==='Enter')setUserName();});
-function changeName(){document.getElementById('modal-name').value=userName;document.getElementById('name-modal').style.display='flex';}
+document.getElementById('modal-name').addEventListener('keydown', e => { if (e.key === 'Enter') setUserName(); });
+function changeName() { document.getElementById('modal-name').value = userName; document.getElementById('name-modal').style.display = 'flex'; }
 
-function showApp(){
-  if(!USE_FIREBASE)document.getElementById('setup-warn').style.display='block';
-  document.getElementById('main-app').style.display='block';
-  document.getElementById('uname').textContent=userName;
-  document.getElementById('f-name').value=userName;
-  document.getElementById('av').textContent=userName.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
-  loadBk().then(()=>{renderCal();renderSlots();});
+function showApp() {
+  if (!USE_FB) document.getElementById('setup-warn').style.display = 'block';
+  document.getElementById('main-app').style.display = 'block';
+  document.getElementById('uname').textContent = userName;
+  document.getElementById('f-name').value = userName;
+  document.getElementById('av').textContent = userName.split(' ').filter(Boolean).map(n => n[0]).join('').substring(0, 2).toUpperCase() || '?';
+  loadBk().then(() => { renderCal(); renderSlots(); });
 }
 
-function renderCal(){
-  document.getElementById('cal-lbl').textContent=MONTHS[calM]+' '+calY;
-  const el=document.getElementById('cal');el.innerHTML='';
-  WD.forEach(d=>{const h=document.createElement('div');h.className='cal-hdr';h.textContent=d;el.appendChild(h);});
-  const first=new Date(calY,calM,1).getDay();
-  const off=first===0?6:first-1;
-  for(let i=0;i<off;i++){const e=document.createElement('div');e.className='cal-day empty';el.appendChild(e);}
-  const today=dStr(new Date());
-  const days=new Date(calY,calM+1,0).getDate();
-  for(let d=1;d<=days;d++){
-    const div=document.createElement('div');div.className='cal-day';div.textContent=d;
-    const k=dKey(calY,calM,d);
-    if(k<today)div.classList.add('past');
-    else{
-      if(k===today)div.classList.add('today');
-      if(selDate===k)div.classList.add('selected');
-      div.onclick=()=>pickDate(k);
+// ── Calendar ──────────────────────────────────────────────────────────────────
+function renderCal() {
+  document.getElementById('cal-lbl').textContent = MONTHS[calM] + ' ' + calY;
+  const el = document.getElementById('cal');
+  el.innerHTML = '';
+  WD.forEach(d => { const h = document.createElement('div'); h.className = 'cal-hdr'; h.textContent = d; el.appendChild(h); });
+  const first = new Date(calY, calM, 1).getDay();
+  const offset = first === 0 ? 6 : first - 1;
+  for (let i = 0; i < offset; i++) { const e = document.createElement('div'); e.className = 'cal-day empty'; el.appendChild(e); }
+  const todayStr = dStr(new Date());
+  const daysInMonth = new Date(calY, calM + 1, 0).getDate();
+  for (let d = 1; d <= daysInMonth; d++) {
+    const div = document.createElement('div'); div.className = 'cal-day'; div.textContent = d;
+    const k = dKey(calY, calM, d);
+    if (k < todayStr) div.classList.add('past');
+    else {
+      if (k === todayStr) div.classList.add('today');
+      if (selDate === k) div.classList.add('selected');
+      div.onclick = () => pickDate(k);
     }
     el.appendChild(div);
   }
 }
-function pickDate(k){selDate=k;selTime=null;renderCal();renderSlots();updatePill();}
-function chMonth(d){calM+=d;if(calM<0){calM=11;calY--;}if(calM>11){calM=0;calY++;}renderCal();}
+function pickDate(k) { selDate = k; selTime = null; renderCal(); renderSlots(); updatePill(); updateDurInfo(); }
+function chMonth(d) { calM += d; if (calM < 0) { calM = 11; calY--; } if (calM > 11) { calM = 0; calY++; } renderCal(); }
 
-function renderSlots(){
-  const el=document.getElementById('slots');el.innerHTML='';
-  if(!selDate){el.innerHTML='<p style="color:#ccc;font-size:12px;grid-column:1/-1;padding:16px 4px">Pick a date first</p>';return;}
-  const dayBk=allBk[selDate]||{};
-  SLOTS.forEach(t=>{
-    const div=document.createElement('div');div.className='slot';
-    const bk=Object.values(dayBk).find(b=>b.time===t);
-    if(bk){
-      const mine=bk.user===userName;
-      div.classList.add(mine?'mine-booked':'booked');
-      div.innerHTML=`${t}<span class="who">${mine?'✓ You':bk.user.split(' ')[0]}</span>`;
-      div.title=`Booked by ${bk.user}${bk.nature?' — '+bk.nature:''}`;
+// ── Slots ─────────────────────────────────────────────────────────────────────
+function renderSlots() {
+  const el = document.getElementById('slots'); el.innerHTML = '';
+  if (!selDate) {
+    el.innerHTML = '<p style="color:#ccc;font-size:12px;grid-column:1/-1;padding:18px 4px;text-align:center">Pick a date first</p>';
+    return;
+  }
+  const dayBk = allBk[selDate] || {};
+  SLOTS.forEach(t => {
+    const div = document.createElement('div'); div.className = 'slot';
+    const bk = getBlockingBooking(t, dayBk);
+    if (bk) {
+      const isStart = bk.time === t;
+      const mine = bk.user === userName;
+      if (mine) {
+        div.classList.add(isStart ? 'mine-start' : 'mine-block');
+        div.innerHTML = `${t}<span class="who">${isStart ? '✓ You' : '↑ You'}</span>`;
+      } else {
+        div.classList.add(isStart ? 'booked' : 'blocked');
+        const shortName = bk.user.split(' ')[0].substring(0, 8);
+        div.innerHTML = `${t}<span class="who">${isStart ? shortName : '↑ ' + shortName}</span>`;
+      }
+      div.title = `Booked by ${bk.user} — ${bk.time} for ${bk.dur} mins (${bk.nature || ''})`;
     } else {
-      if(selTime===t)div.classList.add('selected');
-      div.textContent=t;
-      div.onclick=()=>{selTime=t;renderSlots();updatePill();};
+      if (selTime === t) div.classList.add('selected');
+      div.textContent = t;
+      div.onclick = () => { selTime = t; renderSlots(); updatePill(); updateDurInfo(); };
     }
     el.appendChild(div);
   });
 }
 
-function updatePill(){
-  const l=document.getElementById('sel-label');
-  if(selDate&&selTime)l.textContent=fmtD(selDate)+' · '+selTime+' IST';
-  else if(selDate)l.textContent=fmtD(selDate)+' · Pick a time';
-  else l.textContent='Select a date and time';
+// ── Duration preview ──────────────────────────────────────────────────────────
+function onDurChange() { updateDurInfo(); }
+function updateDurInfo() {
+  const info = document.getElementById('dur-info');
+  if (!selDate || !selTime) { info.classList.remove('show'); return; }
+  const dur = parseInt(document.getElementById('f-dur').value);
+  const endTime = addMins(selTime, dur);
+  const numSlots = dur / 30;
+  document.getElementById('dur-info-slots').textContent = numSlots + (numSlots === 1 ? ' slot' : ' slots');
+  document.getElementById('dur-info-start').textContent = selTime;
+  document.getElementById('dur-info-end').textContent = endTime;
+  info.classList.add('show');
 }
 
-async function submitBooking(){
+function updatePill() {
+  const l = document.getElementById('sel-label');
+  if (selDate && selTime) l.textContent = fmtD(selDate) + ' · ' + selTime + ' IST';
+  else if (selDate) l.textContent = fmtD(selDate) + ' · Pick a time';
+  else l.textContent = 'Select a date and time';
+}
+
+// ── Submit ────────────────────────────────────────────────────────────────────
+async function submitBooking() {
   hideErr();
-  if(!selDate)return showErr('Please select a date.');
-  if(!selTime)return showErr('Please select a time slot.');
-  const desc=document.getElementById('f-desc').value.trim();
-  if(!desc)return showErr('Please add a description of work.');
+  if (!selDate) return showErr('Please select a date.');
+  if (!selTime) return showErr('Please select a time slot.');
+  const desc = document.getElementById('f-desc').value.trim();
+  if (!desc) return showErr('Please enter a description of work.');
+  const dur = parseInt(document.getElementById('f-dur').value);
+
+  // Re-fetch live data to check conflicts
   await loadBk();
-  const conflict=Object.values(allBk[selDate]||{}).find(b=>b.time===selTime);
-  if(conflict){renderSlots();return showErr(`Slot just taken by ${conflict.user}. Pick another time.`);}
-  const bk={
-    id:Date.now().toString(),user:userName,date:selDate,time:selTime,
-    team:document.getElementById('f-team').value||'—',
-    nature:document.getElementById('f-nature').value||'—',
-    desc,dur:parseInt(document.getElementById('f-dur').value),
-    createdAt:new Date().toISOString()
-  };
-  const btn=document.getElementById('sub-btn');
-  btn.disabled=true;btn.textContent='Saving...';
-  if(USE_FIREBASE){
-    const ok=await fbSet(`bookings/${selDate}/${bk.id}`,bk);
-    if(!ok){btn.disabled=false;btn.textContent='Confirm Booking →';return showErr('Firebase save failed. Check your database URL.');}
-  } else {
-    if(!allBk[selDate])allBk[selDate]={};
-    allBk[selDate][bk.id]=bk;lsSave();
+  const dayBk = allBk[selDate] || {};
+
+  // ── KEY FIX: check overlap using full duration ──
+  const conflict = getOverlappingBooking(selTime, dur, dayBk);
+  if (conflict) {
+    renderSlots();
+    const endT = addMins(conflict.time, conflict.dur || 60);
+    return showErr(`Conflict! ${conflict.user} has booked ${conflict.time}–${endT}. Please pick a different time.`);
   }
-  btn.disabled=false;btn.textContent='Confirm Booking →';
-  await loadBk();showSuccess(bk);
+
+  const bk = {
+    id: Date.now().toString(),
+    user: userName,
+    date: selDate,
+    time: selTime,
+    dur,
+    team: document.getElementById('f-team').value || '—',
+    nature: document.getElementById('f-nature').value || '—',
+    desc,
+    createdAt: new Date().toISOString()
+  };
+
+  const btn = document.getElementById('sub-btn');
+  btn.disabled = true; btn.textContent = 'Saving...';
+
+  if (USE_FB) {
+    const ok = await fbSet(`bookings/${selDate}/${bk.id}`, bk);
+    if (!ok) { btn.disabled = false; btn.textContent = 'Confirm Booking →'; return showErr('Firebase save failed. Check your database URL.'); }
+  } else {
+    if (!allBk[selDate]) allBk[selDate] = {};
+    allBk[selDate][bk.id] = bk; lsSave();
+  }
+
+  btn.disabled = false; btn.textContent = 'Confirm Booking →';
+  await loadBk();
+  showSuccess(bk);
 }
 
-function showSuccess(b){
-  document.getElementById('tab-book').style.display='none';
-  document.getElementById('tab-success').style.display='block';
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById('succ-details').innerHTML=`
+// ── Success ───────────────────────────────────────────────────────────────────
+function showSuccess(b) {
+  document.getElementById('tab-book').style.display = 'none';
+  document.getElementById('tab-success').style.display = 'block';
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  const endTime = addMins(b.time, b.dur);
+  document.getElementById('succ-details').innerHTML = `
     <div class="sr"><span>Machine</span><span>Mauyran (HIL)</span></div>
     <div class="sr"><span>Date</span><span>${fmtD(b.date)}</span></div>
-    <div class="sr"><span>Time</span><span>${b.time} IST</span></div>
-    <div class="sr"><span>Duration</span><span>${b.dur} mins</span></div>
+    <div class="sr"><span>Time</span><span>${b.time} – ${endTime} IST</span></div>
+    <div class="sr"><span>Duration</span><span>${b.dur} minutes</span></div>
+    <div class="sr"><span>Slots blocked</span><span>${b.dur / 30} slot${b.dur > 30 ? 's' : ''} (${b.time} to ${endTime})</span></div>
     <div class="sr"><span>Booked by</span><span>${b.user}</span></div>
     <div class="sr"><span>Team</span><span>${b.team}</span></div>
     <div class="sr"><span>Nature</span><span>${b.nature}</span></div>
     <div class="sr"><span>Description</span><span>${b.desc}</span></div>
-    <div class="sr"><span>Shared</span><span>${USE_FIREBASE?'✅ Visible to whole team':'⚠️ Add Firebase URL to share'}</span></div>`;
+    <div class="sr"><span>Shared</span><span>${USE_FB ? '✅ Visible to whole team' : '⚠️ Local only — add Firebase URL'}</span></div>`;
 }
 
-async function renderMy(){
-  const el=document.getElementById('my-list');
+// ── My / All bookings ─────────────────────────────────────────────────────────
+async function renderMy() {
+  const el = document.getElementById('my-list');
   await loadBk();
-  const today=dStr(new Date());let mine=[];
-  Object.values(allBk).forEach(d=>Object.values(d).forEach(b=>{if(b.user===userName&&b.date>=today)mine.push(b);}));
-  mine.sort((a,b)=>a.date.localeCompare(b.date)||a.time.localeCompare(b.time));
-  if(!mine.length){el.innerHTML='<div class="empty">📭 No upcoming bookings yet.</div>';return;}
-  el.innerHTML=mine.map(b=>cardHTML(b,true)).join('');
+  const today = dStr(new Date()); let mine = [];
+  Object.values(allBk).forEach(d => Object.values(d).forEach(b => { if (b.user === userName && b.date >= today) mine.push(b); }));
+  mine.sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
+  if (!mine.length) { el.innerHTML = '<div class="empty-state">📭 No upcoming bookings yet.</div>'; return; }
+  el.innerHTML = mine.map(b => cardHTML(b, true)).join('');
 }
 
-async function renderAll(){
-  const el=document.getElementById('all-list');
+async function renderAll() {
+  const el = document.getElementById('all-list');
   await loadBk();
-  const today=dStr(new Date());let all=[];
-  Object.values(allBk).forEach(d=>Object.values(d).forEach(b=>{if(b.date>=today)all.push(b);}));
-  all.sort((a,b)=>a.date.localeCompare(b.date)||a.time.localeCompare(b.time));
-  if(!all.length){el.innerHTML='<div class="empty">🗓️ No upcoming bookings.</div>';return;}
-  el.innerHTML=all.map(b=>cardHTML(b,false)).join('');
+  const today = dStr(new Date()); let all = [];
+  Object.values(allBk).forEach(d => Object.values(d).forEach(b => { if (b.date >= today) all.push(b); }));
+  all.sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
+  if (!all.length) { el.innerHTML = '<div class="empty-state">🗓️ No upcoming bookings on Mauyran.</div>'; return; }
+  el.innerHTML = all.map(b => cardHTML(b, false)).join('');
 }
 
-function cardHTML(b,showDel){
-  const mine=b.user===userName;
+function cardHTML(b, showDel) {
+  const mine = b.user === userName;
+  const endTime = addMins(b.time, b.dur || 60);
   return `<div class="bk-card">
-    <div>
-      <h4>Mauyran · ${b.time} IST · ${b.dur} min</h4>
-      <p>${fmtD(b.date)} · ${b.team}</p>
+    <div class="bk-info">
+      <h4>Mauyran · ${b.time}–${endTime} IST</h4>
+      <p>${fmtD(b.date)} · ${b.dur} mins · ${b.team}</p>
       <p>${b.nature} — ${b.user}</p>
-      ${b.desc?`<p class="desc">${b.desc.substring(0,80)}${b.desc.length>80?'…':''}</p>`:''}
+      ${b.desc ? `<p class="desc">${b.desc.substring(0, 80)}${b.desc.length > 80 ? '…' : ''}</p>` : ''}
     </div>
-    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
-      ${mine?'<span class="badge b-mine">Mine</span>':'<span class="badge b-up">Upcoming</span>'}
-      ${showDel&&mine?`<button class="del-btn" title="Cancel" onclick="cancelBk('${b.id}','${b.date}')">✕</button>`:''}
+    <div class="bk-right">
+      ${mine ? '<span class="badge b-mine">Mine</span>' : '<span class="badge b-up">Upcoming</span>'}
+      ${showDel && mine ? `<button class="del-btn" title="Cancel booking" onclick="cancelBk('${b.id}','${b.date}')">✕</button>` : ''}
     </div>
   </div>`;
 }
 
-async function cancelBk(id,date){
-  if(!confirm('Cancel this booking?'))return;
-  if(USE_FIREBASE)await fbDel(`bookings/${date}/${id}`);
-  else{if(allBk[date]){delete allBk[date][id];lsSave();}}
-  await loadBk();renderMy();renderSlots();
+async function cancelBk(id, date) {
+  if (!confirm('Cancel this booking? The time slots will be freed for your team.')) return;
+  if (USE_FB) await fbDel(`bookings/${date}/${id}`);
+  else { if (allBk[date]) { delete allBk[date][id]; lsSave(); } }
+  await loadBk(); renderMy(); renderSlots();
 }
 
-function showTab(n){
-  ['book','my','all','success'].forEach(t=>{const e=document.getElementById('tab-'+t);if(e)e.style.display='none';});
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById('tab-'+n).style.display='block';
-  const idx={book:0,my:1,all:2}[n];
-  if(idx!==undefined)document.querySelectorAll('.tab')[idx].classList.add('active');
-  if(n==='my')renderMy();
-  if(n==='all')renderAll();
+// ── Tabs ──────────────────────────────────────────────────────────────────────
+function showTab(n) {
+  ['book', 'my', 'all', 'success'].forEach(t => { const e = document.getElementById('tab-' + t); if (e) e.style.display = 'none'; });
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + n).style.display = 'block';
+  const idx = { book: 0, my: 1, all: 2 }[n];
+  if (idx !== undefined) document.querySelectorAll('.tab')[idx].classList.add('active');
+  if (n === 'my') renderMy();
+  if (n === 'all') renderAll();
 }
-function newBooking(){document.getElementById('tab-success').style.display='none';document.getElementById('tab-book').style.display='block';document.querySelectorAll('.tab')[0].classList.add('active');resetForm();}
-function resetForm(){selDate=null;selTime=null;document.getElementById('f-desc').value='';['f-team','f-nature'].forEach(id=>document.getElementById(id).selectedIndex=0);document.getElementById('f-dur').selectedIndex=1;updatePill();renderCal();renderSlots();}
-function dKey(y,m,d){return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`}
-function dStr(dt){return dKey(dt.getFullYear(),dt.getMonth(),dt.getDate())}
-function fmtD(s){return new Date(s+'T00:00:00').toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short',year:'numeric'})}
-function showErr(m){const e=document.getElementById('f-err');e.textContent=m;e.style.display='block';setTimeout(()=>e.style.display='none',5000);}
-function hideErr(){document.getElementById('f-err').style.display='none';}
+function newBooking() { document.getElementById('tab-success').style.display = 'none'; document.getElementById('tab-book').style.display = 'block'; document.querySelectorAll('.tab')[0].classList.add('active'); resetForm(); }
+function resetForm() {
+  selDate = null; selTime = null;
+  document.getElementById('f-desc').value = '';
+  ['f-team', 'f-nature'].forEach(id => document.getElementById(id).selectedIndex = 0);
+  document.getElementById('f-dur').selectedIndex = 1;
+  document.getElementById('dur-info').classList.remove('show');
+  updatePill(); renderCal(); renderSlots();
+}
 
+// ── Utils ─────────────────────────────────────────────────────────────────────
+function dKey(y, m, d) { return `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`; }
+function dStr(dt) { return dKey(dt.getFullYear(), dt.getMonth(), dt.getDate()); }
+function fmtD(s) { return new Date(s + 'T00:00:00').toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }); }
+function showErr(m) { const e = document.getElementById('f-err'); e.textContent = m; e.style.display = 'block'; setTimeout(() => e.style.display = 'none', 6000); }
+function hideErr() { document.getElementById('f-err').style.display = 'none'; }
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
 initUser();
 </script>
 </body>
