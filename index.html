@@ -10,7 +10,7 @@
   Get it from: console.firebase.google.com → Realtime Database
 ══════════════════════════════════════════════════════ -->
 <script>
-  const FIREBASE_URL = "PASTE_YOUR_FIREBASE_URL_HERE";
+  const FIREBASE_URL = "https://mauyran-booking-abc12-default-rtdb.asia-southeast1.firebasedatabase.app";
 </script>
 
 <style>
@@ -187,7 +187,7 @@ input[readonly] { background: #f5f5f5; color: #999; cursor: default; }
   <div class="header">
     <div class="logo">M</div>
     <h1>Mauyran Machine Bookings</h1>
-    <p>Automation Machine — HIL Booking System</p>
+    <p>Automation Machine - Booking System</p>
     <div class="date-pill" id="sel-label">Select a date and time</div>
   </div>
 
@@ -582,7 +582,7 @@ function showSuccess(b) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   const endTime = addMins(b.time, b.dur);
   document.getElementById('succ-details').innerHTML = `
-    <div class="sr"><span>Machine</span><span>Mauyran (HIL)</span></div>
+    <div class="sr"><span>Machine</span><span>Mauyran</span></div>
     <div class="sr"><span>Date</span><span>${fmtD(b.date)}</span></div>
     <div class="sr"><span>Time</span><span>${b.time} – ${endTime} IST</span></div>
     <div class="sr"><span>Duration</span><span>${b.dur} minutes</span></div>
